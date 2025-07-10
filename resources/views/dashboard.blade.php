@@ -1,0 +1,21 @@
+<x-layouts.app :title="__('RSS Feed Reader')">
+    <div class="flex h-full w-full flex-1 gap-6">
+        {{-- Sidebar --}}
+        <div class="w-80 flex-shrink-0 space-y-6">
+            {{-- Feed Manager --}}
+            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <livewire:feed-manager />
+            </div>
+            
+            {{-- Feed List --}}
+            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 max-h-[calc(100vh-300px)] overflow-y-auto">
+                <livewire:feed-list />
+            </div>
+        </div>
+        
+        {{-- Main Content Area --}}
+        <div class="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 overflow-y-auto">
+            <livewire:feed-items />
+        </div>
+    </div>
+</x-layouts.app>
