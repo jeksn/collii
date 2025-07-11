@@ -1,23 +1,23 @@
 <div class="space-y-4">
     {{-- Search and Controls --}}
-    <div class="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <div class="flex-1 max-w-md">
+    <div class="flex flex-col sm:flex-row gap-4 justify-between items-end sm:items-center">
+        {{-- <div class="flex-1 max-w-md">
             <input 
                 type="text" 
                 wire:model.live="search" 
                 placeholder="Search articles..."
                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
             >
-        </div>
+        </div> --}}
         
         <div class="flex gap-2">
-            <button 
+            <flux:button 
                 wire:click="markAllAsRead"
                 wire:confirm="Mark all visible items as read?"
-                class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm"
+				variant="primary"
             >
                 Mark All Read
-            </button>
+            </flux:button>
         </div>
     </div>
 

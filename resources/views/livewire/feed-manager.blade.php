@@ -1,3 +1,5 @@
+
+
 <div class="space-y-4">
     {{-- Messages --}}
     @if($message)
@@ -16,7 +18,14 @@
     {{-- Add Feed Button --}}
     <div class="flex justify-between items-center">
         <h2 class="text-xl font-semibold text-gray-900 dark:text-white">RSS Feeds</h2>
-        <button 
+		<flux:button variant="primary" wire:click="toggleAddForm" class="cursor-pointer">
+			@if($showAddForm)
+				Cancel
+			@else
+				Add Feed
+			@endif
+		</flux:button>
+        {{-- <button 
             wire:click="toggleAddForm" 
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
         >
@@ -25,7 +34,7 @@
             @else
                 Add Feed
             @endif
-        </button>
+        </button> --}}
     </div>
 
     {{-- Add Feed Form --}}
@@ -59,23 +68,23 @@
                 </div>
                 
                 <div class="flex gap-3">
-                    <button 
+                    <flux:button 
                         type="submit" 
-                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        class="cursor-pointer"
                         wire:loading.attr="disabled"
                         wire:loading.class="opacity-50"
                     >
                         <span wire:loading.remove>Add Feed</span>
                         <span wire:loading>Adding...</span>
-                    </button>
+                    </flux:button>
                     
-                    <button 
+                    {{-- <flux:button 
                         type="button" 
                         wire:click="toggleAddForm"
-                        class="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+                        class="cursor-pointer"
                     >
                         Cancel
-                    </button>
+                    </flux:button> --}}
                 </div>
             </form>
         </div>

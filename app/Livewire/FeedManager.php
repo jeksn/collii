@@ -85,6 +85,7 @@ class FeedManager extends Component
         }
     }
     
+    #[On('refresh-feed')]
     public function refreshFeed($feedId)
     {
         try {

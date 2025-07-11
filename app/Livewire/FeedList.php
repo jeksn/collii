@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Feed;
+use App\Services\RssFeedService;
 use Livewire\Component;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Auth;
@@ -57,6 +58,12 @@ class FeedList extends Component
         $this->selectedFeedId = 'starred';
         $this->viewMode = 'starred';
         $this->dispatch('show-starred-only');
+    }
+    
+    public function refreshFeed($feedId)
+    {
+        // Dispatch an event to the parent FeedManager component
+        $this->dispatch('refresh-feed', feedId: $feedId);
     }
 
     public function render()

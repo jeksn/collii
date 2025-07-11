@@ -1,36 +1,38 @@
 <div class="space-y-2">
     {{-- Quick Filter Buttons --}}
-    <div class="flex flex-wrap gap-2 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-        <button 
-            wire:click="showAllItems" 
-            class="px-3 py-1 text-sm rounded {{ $viewMode === 'all' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }} transition-colors"
-        >
-            All Items
-        </button>
-        
-        <button 
-            wire:click="showUnreadOnly" 
-            class="px-3 py-1 text-sm rounded {{ $viewMode === 'unread' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }} transition-colors"
-        >
-            Unread
-        </button>
-        
-        <button 
-            wire:click="showStarredOnly" 
-            class="px-3 py-1 text-sm rounded {{ $viewMode === 'starred' ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100' }} transition-colors"
-        >
-            Starred
-        </button>
+    <div class="flex flex-wrap gap-2 bg-gray-50 dark:bg-neutral-900 rounded-lg">
+        <flux:button.group>
+			<flux:button 
+				wire:click="showAllItems" 
+				class="{{ $viewMode === 'all' ? 'opacity-100' : 'opacity-80' }}"
+			>
+				All Items
+			</flux:button>
+			
+			<flux:button 
+				wire:click="showUnreadOnly" 
+				class="{{ $viewMode === 'unread' ? 'opacity-100' : 'opacity-80' }}"
+			>
+				Unread
+			</flux:button>
+			
+			<flux:button 
+				wire:click="showStarredOnly" 
+				class="{{ $viewMode === 'starred' ? 'opacity-100' : 'opacity-80' }}"
+			>
+				Starred
+			</flux:button>
+		</flux:button.group>
     </div>
 
     {{-- Feed List --}}
-    <div class="space-y-1">
+    <div class="space-y-3 cursor-pointer">
         @forelse($feeds as $feed)
-            <div class="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                <div class="flex items-center justify-between">
+		<div class="p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+			<div class="flex items-center justify-between">
                     <button 
                         wire:click="selectFeed({{ $feed['id'] }})"
-                        class="flex-1 text-left group"
+                        class="flex-1 text-left "
                     >
                         <div class="flex items-center gap-3">
                             @if($feed['image_url'])
@@ -44,7 +46,7 @@
                             @endif
                             
                             <div class="flex-1 min-w-0">
-                                <h3 class="font-medium text-gray-900 dark:text-white truncate group-hover:text-blue-600 transition-colors">
+                                <h3 class="font-medium text-gray-900 dark:text-white truncate transition-colors">
                                     {{ $feed['title'] }}
                                 </h3>
                                 <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
@@ -62,7 +64,7 @@
                     {{-- Feed Actions --}}
                     <div class="flex items-center gap-1">
                         <button 
-                            wire:click="$parent.refreshFeed({{ $feed['id'] }})"
+                            wire:click="refreshFeed({{ $feed['id'] }})"
                             class="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                             title="Refresh feed"
                         >
