@@ -1,36 +1,66 @@
-<div class="space-y-2">
+<div class="space-y-4">
     @if($message)
         <div class="p-4 mb-4 rounded-lg {{ $messageType === 'success' ? 'bg-green-100 text-green-800' : ($messageType === 'error' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
             {{ $message }}
         </div>
     @endif
+    
     {{-- Quick Filter Buttons --}}
     <div class="flex flex-wrap justify-between gap-2 bg-gray-50 dark:bg-neutral-900 rounded-lg">
-		
         <flux:button.group class="w-full">
-			<flux:button 
-				wire:click="showAllItems" 
-				class="{{ $viewMode === 'all' ? 'opacity-100' : 'opacity-80' }}"
-			>
-				All Items
-			</flux:button>
-			
-			<flux:button 
-				wire:click="showUnreadOnly" 
-				class="{{ $viewMode === 'unread' ? 'opacity-100' : 'opacity-80' }} w-full"
-			>
-				Unread
-			</flux:button>
-			
-			<flux:button 
-				wire:click="showStarredOnly" 
-				class="{{ $viewMode === 'starred' ? 'opacity-100' : 'opacity-80' }}"
-			>
-				Starred
-			</flux:button>
-		</flux:button.group>
-        
+            <flux:button 
+                wire:click="showAllItems" 
+                class="{{ $viewMode === 'all' ? 'opacity-100' : 'opacity-80' }}"
+            >
+                All Items
+            </flux:button>
+            
+            <flux:button 
+                wire:click="showUnreadOnly" 
+                class="{{ $viewMode === 'unread' ? 'opacity-100' : 'opacity-80' }} w-full"
+            >
+                Unread
+            </flux:button>
+            
+            <flux:button 
+                wire:click="showStarredOnly" 
+                class="{{ $viewMode === 'starred' ? 'opacity-100' : 'opacity-80' }}"
+            >
+                Starred
+            </flux:button>
+        </flux:button.group>
     </div>
+    
+    {{-- Tags Filter --}}
+    @if(!empty($tags))
+    <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
+        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Filter by Tag</h3>
+        <div class="flex flex-wrap gap-2">
+            @if($selectedTagId)
+                <button 
+                    wire:click="clearTagFilter"
+                    class="inline-flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-full text-xs hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                >
+                    <span>Clear Filter</span>
+                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            @endif
+            
+            @foreach($tags as $tag)
+                <button 
+                    wire:click="selectTag({{ $tag['id'] }})"
+                    class="inline-flex items-center px-2 py-1 rounded-full text-xs {{ $selectedTagId == $tag['id'] ? 'ring-2 ring-blue-500' : '' }}"
+                    style="background-color: {{ $tag['color'] }}; color: {{ $this->getContrastColor($tag['color']) }}"
+                >
+                    <span>{{ $tag['name'] }}</span>
+                    <span class="ml-1 bg-white text-black bg-opacity-30 rounded-full px-1">{{ $tag['feeds_count'] }}</span>
+                </button>
+            @endforeach
+        </div>
+    </div>
+    @endif
 
     {{-- Feed List --}}
     <div class="space-y-3 cursor-pointer">
@@ -56,12 +86,28 @@
                                 <h3 class="font-medium text-gray-900 dark:text-white truncate transition-colors">
                                     {{ $feed['title'] }}
                                 </h3>
-                                <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <span>{{ $feed['items_count'] }} items</span>
-                                    @if($feed['unread_items_count'] > 0)
-                                        <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                                            {{ $feed['unread_items_count'] }} unread
-                                        </span>
+                                <div class="flex flex-col gap-1">
+                                    <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                                        <span>{{ $feed['items_count'] }} items</span>
+                                        @if($feed['unread_items_count'] > 0)
+                                            <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                                {{ $feed['unread_items_count'] }} unread
+                                            </span>
+                                        @endif
+                                    </div>
+                                    
+                                    {{-- Feed Tags --}}
+                                    @if(isset($feed['tags']) && count($feed['tags']) > 0)
+                                        <div class="flex flex-wrap gap-1 mt-1">
+                                            @foreach($feed['tags'] as $tag)
+                                                <span 
+                                                    class="inline-flex items-center px-2 py-0.5 rounded-full text-xs"
+                                                    style="background-color: {{ $tag['color'] }}; color: {{ $this->getContrastColor($tag['color']) }}"
+                                                >
+                                                    {{ $tag['name'] }}
+                                                </span>
+                                            @endforeach
+                                        </div>
                                     @endif
                                 </div>
                             </div>
@@ -70,6 +116,15 @@
                     
                     {{-- Feed Actions --}}
                     <div class="flex items-center gap-1">
+                        <button 
+                            wire:click="$parent.showTagsForm({{ $feed['id'] }})"
+                            class="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                            title="Manage tags"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                        </button>
                         
                         <button 
                             wire:click="$parent.deleteFeed({{ $feed['id'] }})"

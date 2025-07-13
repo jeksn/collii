@@ -2,13 +2,15 @@
     <div class="flex h-full w-full flex-1 gap-6">
         {{-- Sidebar --}}
         <div class="w-80 flex-shrink-0 space-y-6">
-            {{-- Feed Manager --}}
-            {{-- <livewire:feed-manager /> --}}
+            {{-- Tag Manager --}}
+            <div class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+                <livewire:tag-manager />
+            </div>
             
             {{-- Feed List --}}
             <div class="bg-white flex flex-col dark:bg-neutral-900 gap-6 rounded-lg border border-gray-200 dark:border-gray-700 p-6 overflow-y-auto">
-				<livewire:feed-manager />
-                <livewire:feed-list />
+                <livewire:feed-manager />
+                {{-- <livewire:feed-list /> --}}
             </div>
         </div>
         

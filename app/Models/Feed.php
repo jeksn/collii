@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Carbon\Carbon;
 
@@ -76,5 +77,13 @@ class Feed extends Model
     public function isYouTubeFeed(): bool
     {
         return str_contains($this->feed_url, 'youtube.com') || str_contains($this->feed_url, 'youtu.be');
+    }
+    
+    /**
+     * Get the tags associated with this feed
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
     }
 }

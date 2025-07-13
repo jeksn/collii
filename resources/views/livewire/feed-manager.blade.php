@@ -1,5 +1,3 @@
-
-
 <div class="space-y-4">
     {{-- Messages --}}
     @if($message)
@@ -77,16 +75,65 @@
                         <span wire:loading.remove>Add Feed</span>
                         <span wire:loading>Adding...</span>
                     </flux:button>
-                    
-                    {{-- <flux:button 
-                        type="button" 
-                        wire:click="toggleAddForm"
-                        class="cursor-pointer"
-                    >
-                        Cancel
-                    </flux:button> --}}
                 </div>
             </form>
+        </div>
+    @endif
+    
+    {{-- Feed List with Tag Management --}}
+    <div class="mt-4">
+        <livewire:feed-list />
+    </div>
+    
+    {{-- Edit Tags Form --}}
+    @if($showEditTagsForm)
+        <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-md w-full">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Manage Tags</h3>
+                    <button wire:click="hideTagsForm" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <flux:icon name="x-mark" class="w-5 h-5" />
+                    </button>
+                </div>
+                
+                <form wire:submit.prevent="updateFeedTags" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Select Tags</label>
+                        
+                        @if($tags->isEmpty())
+                            <div class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                No tags available. Create tags first to categorize your feeds.
+                            </div>
+                        @else
+                            <div class="space-y-2 max-h-60 overflow-y-auto p-2 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                @foreach($tags as $tag)
+                                    <label class="flex items-center space-x-2 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded">
+                                        <input 
+                                            type="checkbox" 
+                                            wire:model="selectedTags" 
+                                            value="{{ $tag->id }}" 
+                                            class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                                        >
+                                        <span class="inline-flex items-center">
+                                            <span class="inline-block w-3 h-3 rounded-full mr-2" style="background-color: {{ $tag->color }}"></span>
+                                            <span>{{ $tag->name }}</span>
+                                        </span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                    
+                    <div class="flex justify-end gap-2">
+                        <flux:button type="button" wire:click="hideTagsForm" variant="primary">
+                            Cancel
+                        </flux:button>
+                        <flux:button type="submit">
+                            Save Tags
+                        </flux:button>
+                    </div>
+                </form>
+            </div>
         </div>
     @endif
 </div>

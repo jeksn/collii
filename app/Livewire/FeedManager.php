@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Feed;
+use App\Models\Tag;
 use App\Services\RssFeedService;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -15,6 +16,9 @@ class FeedManager extends Component
     public string $url = '';
     
     public bool $showAddForm = false;
+    public bool $showEditTagsForm = false;
+    public ?int $editingFeedId = null;
+    public array $selectedTags = [];
     public string $message = '';
     public string $messageType = '';
     
@@ -166,8 +170,65 @@ class FeedManager extends Component
         $this->messageType = '';
     }
 
+    public function showTagsForm($feedId)
+    {
+        $this->editingFeedId = $feedId;
+        $this->showEditTagsForm = true;
+        
+        $feed = Auth::user()->feeds()->findOrFail($feedId);
+        $this->selectedTags = $feed->tags->pluck('id')->toArray();
+    }
+    
+    public function hideTagsForm()
+    {
+        $this->showEditTagsForm = false;
+        $this->editingFeedId = null;
+        $this->selectedTags = [];
+    }
+    
+    public function updateFeedTags()
+    {
+        if (!$this->editingFeedId) {
+            return;
+        }
+        
+        try {
+            $feed = Auth::user()->feeds()->findOrFail($this->editingFeedId);
+            $feed->tags()->sync($this->selectedTags);
+            
+            $this->message = 'Feed tags updated successfully.';
+            $this->messageType = 'success';
+            $this->hideTagsForm();
+            
+            // Notify other components that feed tags have been updated
+            $this->dispatch('feed-tags-updated', feedId: $this->editingFeedId);
+        } catch (\Exception $e) {
+            $this->message = 'Error updating feed tags: ' . $e->getMessage();
+            $this->messageType = 'error';
+        }
+    }
+    
+    #[On('tag-updated')]
+    public function refreshTags()
+    {
+        // This will be called when tags are added/edited/deleted
+        // to ensure the tag list is up to date
+        
+        // If we're currently editing tags for a feed, refresh the selected tags
+        if ($this->showEditTagsForm && $this->editingFeedId) {
+            $feed = Auth::user()->feeds()->findOrFail($this->editingFeedId);
+            $this->selectedTags = $feed->tags->pluck('id')->toArray();
+        }
+    }
+    
     public function render()
     {
-        return view('livewire.feed-manager');
+        $tags = Tag::where('user_id', Auth::id())
+            ->orderBy('name')
+            ->get();
+            
+        return view('livewire.feed-manager', [
+            'tags' => $tags
+        ]);
     }
 }

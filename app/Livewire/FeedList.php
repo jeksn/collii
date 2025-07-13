@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Feed;
+use App\Models\Tag;
 use App\Services\RssFeedService;
 use Livewire\Component;
 use Livewire\Attributes\On;
@@ -12,8 +13,10 @@ use Illuminate\Support\Facades\Log;
 class FeedList extends Component
 {
     public $selectedFeedId = null;
+    public $selectedTagId = null;
     public $viewMode = 'all';
     public $feeds = [];
+    public $tags = [];
     public $message = '';
     public $messageType = '';
     
@@ -29,12 +32,38 @@ class FeedList extends Component
     #[On('feed-deleted')]
     #[On('feed-refreshed')]
     #[On('items-marked-read')]
+    #[On('tag-updated')]
+    #[On('feed-tags-updated')]
     public function loadFeeds()
     {
-        $this->feeds = Auth::user()
-            ->feeds()
-            ->withCount(['items', 'unreadItems'])
+        $query = Auth::user()->feeds();
+        
+        // Filter by tag if a tag is selected
+        if ($this->selectedTagId) {
+            $query->whereHas('tags', function($q) {
+                $q->where('tags.id', $this->selectedTagId);
+            });
+        }
+        
+        // Get feeds with their tags and counts
+        $feeds = $query->withCount(['items', 'unreadItems'])
+            ->with(['tags' => function($query) {
+                $query->select('tags.id', 'name', 'color');
+            }])
             ->orderBy('title')
+            ->get();
+            
+        // Convert to array while preserving the tags relationship
+        $this->feeds = $feeds->map(function($feed) {
+            $feedArray = $feed->toArray();
+            $feedArray['tags'] = $feed->tags->toArray();
+            return $feedArray;
+        })->toArray();
+            
+        // Load tags for the sidebar
+        $this->tags = Tag::where('user_id', Auth::id())
+            ->withCount('feeds')
+            ->orderBy('name')
             ->get()
             ->toArray();
     }
@@ -42,8 +71,46 @@ class FeedList extends Component
     public function selectFeed($feedId)
     {
         $this->selectedFeedId = $feedId;
+        $this->selectedTagId = null; // Clear tag filter when selecting a specific feed
         $this->viewMode = 'all'; // Reset to 'all' when selecting a specific feed
         $this->dispatch('feed-selected', feedId: $feedId);
+    }
+    
+    public function selectTag($tagId)
+    {
+        $this->selectedTagId = $tagId;
+        $this->selectedFeedId = null; // Clear feed selection when filtering by tag
+        $this->loadFeeds(); // Reload feeds filtered by the selected tag
+        $this->dispatch('tag-selected', tagId: $tagId);
+    }
+    
+    public function clearTagFilter()
+    {
+        $this->selectedTagId = null;
+        $this->loadFeeds();
+    }
+    
+    /**
+     * Determine if text should be light or dark based on background color
+     * 
+     * @param string $hexColor
+     * @return string
+     */
+    public function getContrastColor($hexColor)
+    {
+        // Remove # if present
+        $hexColor = ltrim($hexColor, '#');
+        
+        // Convert to RGB
+        $r = hexdec(substr($hexColor, 0, 2));
+        $g = hexdec(substr($hexColor, 2, 2));
+        $b = hexdec(substr($hexColor, 4, 2));
+        
+        // Calculate luminance - ITU-R BT.709 formula
+        $luminance = (0.2126 * $r + 0.7152 * $g + 0.0722 * $b) / 255;
+        
+        // Return black for bright colors and white for dark ones
+        return $luminance > 0.5 ? '#000000' : '#ffffff';
     }
     
     public function showAllItems()
