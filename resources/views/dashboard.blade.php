@@ -3,12 +3,11 @@
         {{-- Sidebar --}}
         <div class="w-80 flex-shrink-0 space-y-6">
             {{-- Feed Manager --}}
-            <div class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-                <livewire:feed-manager />
-            </div>
+            {{-- <livewire:feed-manager /> --}}
             
             {{-- Feed List --}}
-            <div class="bg-white dark:bg-neutral-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6 overflow-y-auto">
+            <div class="bg-white flex flex-col dark:bg-neutral-900 gap-6 rounded-lg border border-gray-200 dark:border-gray-700 p-6 overflow-y-auto">
+				<livewire:feed-manager />
                 <livewire:feed-list />
             </div>
         </div>

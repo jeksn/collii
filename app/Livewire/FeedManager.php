@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Feed;
 use App\Services\RssFeedService;
 use Livewire\Component;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
 
@@ -99,6 +100,46 @@ class FeedManager extends Component
             $this->dispatch('feed-refreshed', feedId: $feedId);
         } catch (\Exception $e) {
             $this->message = 'Error refreshing feed: ' . $e->getMessage();
+            $this->messageType = 'error';
+        }
+    }
+    
+    #[On('refresh-all-feeds')]
+    public function refreshAllFeeds()
+    {
+        // Debug message
+        $this->message = 'Starting feed refresh...'; 
+        $this->messageType = 'info';
+        
+        try {
+            $feeds = Auth::user()->feeds()->get();
+            $totalNewItems = 0;
+            $refreshedCount = 0;
+            
+            foreach ($feeds as $feed) {
+                try {
+                    $items = $this->rssFeedService->fetchFeed($feed);
+                    $newItemsCount = $this->rssFeedService->storeFeedItems($feed, $items);
+                    $totalNewItems += $newItemsCount;
+                    $refreshedCount++;
+                } catch (\Exception $e) {
+                    // Continue with other feeds if one fails
+                    continue;
+                }
+            }
+            
+            if ($refreshedCount > 0) {
+                $this->message = "Refreshed {$refreshedCount} feeds! Found {$totalNewItems} new items.";
+                $this->messageType = 'success';
+            } else {
+                $this->message = "No feeds were refreshed. Please try again.";
+                $this->messageType = 'warning';
+            }
+            
+            // Dispatch a single event to refresh the feed list
+            $this->dispatch('feed-refreshed');
+        } catch (\Exception $e) {
+            $this->message = 'Error refreshing feeds: ' . $e->getMessage();
             $this->messageType = 'error';
         }
     }

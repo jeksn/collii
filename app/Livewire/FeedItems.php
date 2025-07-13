@@ -54,6 +54,7 @@ class FeedItems extends Component
         $item = $this->findUserFeedItem($itemId);
         if ($item) {
             $item->markAsRead();
+            $this->dispatch('items-marked-read');
         }
     }
     
@@ -62,6 +63,7 @@ class FeedItems extends Component
         $item = $this->findUserFeedItem($itemId);
         if ($item) {
             $item->markAsUnread();
+            $this->dispatch('items-marked-read');
         }
     }
     
@@ -77,6 +79,9 @@ class FeedItems extends Component
     {
         $query = $this->getItemsQuery();
         $query->update(['is_read' => true]);
+        
+        // Dispatch an event to notify other components that items have been marked as read
+        $this->dispatch('items-marked-read');
     }
     
     public function selectItem($itemId)

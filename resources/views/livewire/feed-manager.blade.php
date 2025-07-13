@@ -17,24 +17,24 @@
 
     {{-- Add Feed Button --}}
     <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">RSS Feeds</h2>
-		<flux:button variant="primary" wire:click="toggleAddForm" class="cursor-pointer">
-			@if($showAddForm)
-				Cancel
-			@else
-				Add Feed
-			@endif
-		</flux:button>
-        {{-- <button 
-            wire:click="toggleAddForm" 
-            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-            @if($showAddForm)
-                Cancel
-            @else
-                Add Feed
-            @endif
-        </button> --}}
+		<h2 class="text-xl font-semibold text-gray-900 dark:text-white">RSS Feeds</h2>
+		<div class="flex gap-2">
+			<flux:button 
+				wire:click="$dispatch('refresh-all-feeds')" class="cursor-pointer"
+				square
+				title="Refresh all feeds"
+			>
+				<flux:icon name="arrow-path" />
+			</flux:button>
+
+			<flux:button square wire:click="toggleAddForm" class="cursor-pointer">
+				@if($showAddForm)
+					<flux:icon name="x-mark" />
+				@else
+					<flux:icon name="plus" />
+				@endif
+			</flux:button>
+		</div>
     </div>
 
     {{-- Add Feed Form --}}

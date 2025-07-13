@@ -1,7 +1,13 @@
 <div class="space-y-2">
+    @if($message)
+        <div class="p-4 mb-4 rounded-lg {{ $messageType === 'success' ? 'bg-green-100 text-green-800' : ($messageType === 'error' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+            {{ $message }}
+        </div>
+    @endif
     {{-- Quick Filter Buttons --}}
-    <div class="flex flex-wrap gap-2 bg-gray-50 dark:bg-neutral-900 rounded-lg">
-        <flux:button.group>
+    <div class="flex flex-wrap justify-between gap-2 bg-gray-50 dark:bg-neutral-900 rounded-lg">
+		
+        <flux:button.group class="w-full">
 			<flux:button 
 				wire:click="showAllItems" 
 				class="{{ $viewMode === 'all' ? 'opacity-100' : 'opacity-80' }}"
@@ -11,7 +17,7 @@
 			
 			<flux:button 
 				wire:click="showUnreadOnly" 
-				class="{{ $viewMode === 'unread' ? 'opacity-100' : 'opacity-80' }}"
+				class="{{ $viewMode === 'unread' ? 'opacity-100' : 'opacity-80' }} w-full"
 			>
 				Unread
 			</flux:button>
@@ -23,6 +29,7 @@
 				Starred
 			</flux:button>
 		</flux:button.group>
+        
     </div>
 
     {{-- Feed List --}}
@@ -63,15 +70,6 @@
                     
                     {{-- Feed Actions --}}
                     <div class="flex items-center gap-1">
-                        <button 
-                            wire:click="refreshFeed({{ $feed['id'] }})"
-                            class="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                            title="Refresh feed"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                        </button>
                         
                         <button 
                             wire:click="$parent.deleteFeed({{ $feed['id'] }})"
