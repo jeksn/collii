@@ -29,8 +29,33 @@ class FeedList extends Component
     }
     
     #[On('feed-added')]
+    public function onFeedAdded()
+    {
+        $this->message = 'Feed added successfully!';
+        $this->messageType = 'success';
+        $this->loadFeeds();
+    }
+    
     #[On('feed-deleted')]
+    public function onFeedDeleted()
+    {
+        $this->message = 'Feed deleted successfully!';
+        $this->messageType = 'success';
+        $this->loadFeeds();
+    }
+    
     #[On('feed-refreshed')]
+    public function onFeedRefreshed($feedId = null)
+    {
+        if (!$feedId) {
+            $this->message = 'All feeds refreshed successfully!';
+        } else {
+            $this->message = 'Feed refreshed successfully!';
+        }
+        $this->messageType = 'success';
+        $this->loadFeeds();
+    }
+    
     #[On('items-marked-read')]
     #[On('tag-updated')]
     #[On('feed-tags-updated')]
@@ -96,6 +121,12 @@ class FeedList extends Component
      * @param string $hexColor
      * @return string
      */
+    public function clearMessage()
+    {
+        $this->message = '';
+        $this->messageType = '';
+    }
+    
     public function getContrastColor($hexColor)
     {
         // Remove # if present

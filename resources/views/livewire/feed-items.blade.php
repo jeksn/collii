@@ -26,7 +26,7 @@
         {{-- Items List --}}
         <div class="space-y-3">
             @forelse($items as $item)
-                <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow {{ $item->is_read ? 'opacity-75' : '' }}">
+                <div class="bg-white dark:bg-neutral-800 rounded-lg border border-gray-200 dark:border-neutral-700 hover:shadow-md transition-shadow {{ $item->is_read ? 'opacity-75' : '' }}">
                     <div class="p-4">
                         {{-- Item Header --}}
                         <div class="flex items-start gap-3 mb-3">
@@ -160,7 +160,7 @@
         
         {{-- Article Detail View --}}
         @if($selectedItem && $selectedItemData)
-            <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 sticky top-4">
+            <div class="bg-white dark:bg-neutral-800 rounded-lg border border-gray-200 dark:border-neutral-700 p-6 sticky top-4">
                 <div class="flex items-start justify-between mb-4">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white leading-tight">
                         {{ $selectedItemData->title }}
@@ -205,7 +205,7 @@
                 </div>
                 
                 {{-- Article Actions --}}
-                <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200 dark:border-neutral-700">
                     <div class="flex items-center gap-3">
                         <button 
                             wire:click="toggleStar({{ $selectedItemData->id }})"

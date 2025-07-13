@@ -98,11 +98,18 @@ class TagManager extends Component
             
             $this->message = 'Tag deleted successfully!';
             $this->messageType = 'success';
+            
             $this->dispatch('tag-updated');
         } catch (\Exception $e) {
             $this->message = 'Error deleting tag: ' . $e->getMessage();
             $this->messageType = 'error';
         }
+    }
+    
+    public function clearMessage()
+    {
+        $this->message = null;
+        $this->messageType = null;
     }
     
     public function render()
